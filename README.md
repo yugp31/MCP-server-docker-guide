@@ -124,6 +124,17 @@ Paste the following content:
 #!/bin/bash
 set -euo pipefail
 
+
+# Security: Verify we're in the official MCP repository
+if [ ! -f "CONTRIBUTING.md" ] || ! grep -q "modelcontextprotocol" "CONTRIBUTING.md" 2>/dev/null; then
+    echo "⚠️  Warning: Not in official MCP servers repository"
+    echo "For security, only build from trusted sources"
+    read -p "Continue anyway? (yes/no): " confirm
+    if [ "$confirm" != "yes" ]; then
+        exit 1
+    fi
+fi
+
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE}")" && pwd)
 DOCKER_SRC_DIR="$SCRIPT_DIR/src"
 
