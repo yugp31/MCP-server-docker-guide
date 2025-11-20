@@ -305,14 +305,48 @@ Instead of hardcoding API keys in the config file, store them as environment var
 ### Linux (Bash/Zsh)
 
 Add to `~/.bashrc` or `~/.zshrc`:
+```
+export BRAVE_API_KEY="your-brave-api-key-here"
+export GOOGLE_MAPS_API_KEY="your-google-maps-api-key-here"
+```
 
+Then reload:
+```
+source ~/.bashrc # or ~/.zshrc
+```
 
-
+Verify Variables Are Set
+```
+echo $BRAVE_API_KEY
+```
+**Note:** Environment variables must be set before starting Claude Desktop.
+___
 ## Step 5: Test Your Setup
 
-### Restart Your MCP Client
+### > Restart Your MCP Client
 
 **Completely quit and restart** your MCP client (don't just reload) to load the new configuration.
+
+### > Verify Server Connection
+
+1. **Completely quit** your MCP client (Claude Desktop/Cursor/Windsurf)
+2. **Restart** the application
+3. Check server status:
+   - **Claude Desktop:** Settings → Developer → MCP
+   - Look for your servers listed as "Connected" or "Running"
+
+### Check Logs If Servers Don't Connect
+
+**Claude Desktop Logs (Linux):**
+```
+~/.config/Claude/logs/mcp*.log
+```
+
+**Common log issues:**
+- "command not found" → Docker not in PATH
+- "permission denied" → Not in docker group
+- "no such file" → Check mount paths are absolute and exist
+
 
 ### Test Each Server
 
@@ -447,19 +481,118 @@ Clean Docker cache and rebuild
 docker system prune -a
 ./build_servers.sh
 ```
+### Docker Security Errors
 
+**"Operation not permitted" errors:**
+
+Add security context
+```
+--security-opt label=disable
+```
+
+**"Cannot connect to Docker daemon:"**
+
+Check Docker is running
+```
+sudo systemctl status docker
+```
+Start if needed
+```
+sudo systemctl start docker
+```
+
+**Resource limit errors:**
+
+Check Docker resources
+```
+docker system df
+```
+Clean up if needed
+```
+docker system prune -a
+```
 ---
 
 ## Security Best Practices
+### 🔒 Essential Security Measures
 
-1. **Limit filesystem access:** Only mount directories the AI needs
-2. **Use read-only mounts when possible:**
-"--mount", "type=bind,src=/path,dst=/workspace,readonly"
+1. **Use Read-Only Mounts by Default**
+```
+--mount type=bind,src=/path,dst=/workspace,readonly
 
-3. **Never hardcode API keys:** Always use environment variables
-4. **Review permissions:** Create limited database users for query-only operations
-5. **Monitor resources:** Use `docker stats` to track container resource usage
-6. **Keep images updated:** Regularly rebuild images for security patches
+```
+Only use read-write when necessary for the server's function.
+
+2. **Set Resource Limits**
+```
+--memory 512m --cpus 0.5
+```
+Prevents runaway containers from consuming all system resources.
+
+3. **Never Hardcode Secrets**
+- Bad: `"BRAVE_API_KEY": "BSA123456789"`
+- Good: `"BRAVE_API_KEY": "${BRAVE_API_KEY}"`
+
+Store secrets in environment variables or Docker secrets.
+
+4. **Limit Filesystem Access**
+Only mount specific directories the AI needs:
+
+- Good: Limited access
+--mount type=bind,src=/home/user/documents,dst=/workspace
+
+- Bad: Too broad
+--mount type=bind,src=/home/user,dst=/workspace
+
+
+5. **Drop Unnecessary Capabilities**
+For security-sensitive servers like Puppeteer:
+```
+--cap-drop=ALL --security-opt=no-new-privileges
+```
+
+6. **Disable Network When Not Needed**
+```
+--network none
+```
+Use for local-only servers like filesystem or SQLite.
+
+7. **Regular Updates**
+   
+Pull latest official servers
+```
+cd servers && git pull
+```
+Rebuild images
+```
+./build_servers.sh
+```
+Remove old images
+```
+docker image prune
+```
+
+8. **Audit Logging**
+Monitor MCP activity by checking Claude Desktop logs regularly:
+```
+tail -f ~/.config/Claude/logs/mcp*.log
+```
+---
+### 🚨 Security Red Flags
+
+**DO NOT use servers that:**
+- Request root/admin privileges
+- Want access to your entire home directory
+- Lack proper documentation or source code
+- Come from untrusted sources
+- Have no version control history
+
+### 🛡️ Zero-Trust Principles
+
+- Assume all MCP servers could be compromised
+- Grant minimum necessary permissions
+- Regularly review what servers can access
+- Remove unused servers from configuration
 
 ---
 
