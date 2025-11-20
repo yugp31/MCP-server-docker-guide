@@ -213,64 +213,79 @@ nano ~/.config/Claude/claude_desktop_config.json
 Add the following configuration:
 ```
 {
-"mcpServers": {
-"filesystem": {
-"command": "docker",
-"args": [
-"run", "-i", "--rm",
-"--mount", "type=bind,src=/home/YOUR_USERNAME/mcp-workspace,dst=/workspace",
-"filesystem",
-"/workspace"
-]
-},
-"git": {
-"command": "docker",
-"args": ["run", "-i", "--rm", "git"]
-},
-"brave-search": {
-"command": "docker",
-"args": [
-"run", "-i", "--rm",
-"-e", "BRAVE_API_KEY",
-"brave-search"
-],
-"env": {
-"BRAVE_API_KEY": "YOUR_BRAVE_API_KEY_HERE"
+  "mcpServers": {
+    "filesystem": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "--mount", "type=bind,src=/home/YOUR_USERNAME/mcp-workspace,dst=/workspace,readonly",
+        "--memory", "512m",
+        "--cpus", "0.5",
+        "filesystem",
+        "/workspace"
+      ]
+    },
+    "git": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "--mount", "type=bind,src=/path/to/your/repo,dst=/repo",
+        "git",
+        "--repository", "/repo"
+      ]
+    },
+    "brave-search": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "-e", "BRAVE_API_KEY",
+        "brave-search"
+      ],
+      "env": {
+        "BRAVE_API_KEY": "${BRAVE_API_KEY}"
+      }
+    },
+    "sqlite": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "--mount", "type=bind,src=/home/YOUR_USERNAME/databases,dst=/data",
+        "sqlite"
+      ]
+    },
+    "fetch": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "fetch"]
+    },
+    "memory": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "memory"]
+    },
+    "puppeteer": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "--init",
+        "--cap-drop=ALL",
+        "--security-opt=no-new-privileges",
+        "-e", "DOCKER_CONTAINER=true",
+        "puppeteer"
+      ]
+    },
+    "google-maps": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "-e", "GOOGLE_MAPS_API_KEY",
+        "google-maps"
+      ],
+      "env": {
+        "GOOGLE_MAPS_API_KEY": "${GOOGLE_MAPS_API_KEY}"
+      }
+    }
+  }
 }
-},
-"sqlite": {
-"command": "docker",
-"args": ["run", "-i", "--rm", "sqlite"]
-},
-"fetch": {
-"command": "docker",
-"args": ["run", "-i", "--rm", "fetch"]
-},
-"memory": {
-"command": "docker",
-"args": ["run", "-i", "--rm", "memory"]
-},
-"puppeteer": {
-"command": "docker",
-"args": [
-"run", "-i", "--rm", "--init",
-"-e", "DOCKER_CONTAINER=true",
-"puppeteer"
-]
-},
-"google-maps": {
-"command": "docker",
-"args": [
-"run", "-i", "--rm",
-"-e", "GOOGLE_MAPS_API_KEY",
-"google-maps"
-],
-"env": {
-"GOOGLE_MAPS_API_KEY": "YOUR_GOOGLE_MAPS_API_KEY_HERE"
-}
-}
-}
-}
+
 ```
 ### Configuration Notes
 
