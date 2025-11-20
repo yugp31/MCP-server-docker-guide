@@ -42,6 +42,21 @@ MCP follows a **client-host-server** architecture with three main components:
 
 ---
 
+## ⚠️ Security Notice
+
+**IMPORTANT:** MCP servers have access to your system resources. Always:
+
+- ✅ Review server source code before building
+- ✅ Use Docker containers for isolation (recommended)
+- ✅ Use read-only mounts (`:ro`) when possible
+- ✅ Store API keys in environment variables, not config files
+- ✅ Limit filesystem access to specific directories only
+- ✅ Never expose MCP servers directly to the internet
+- ✅ Keep Docker images updated regularly
+
+For detailed security guidelines, see [MCP Security Best Practices](https://modelcontextprotocol.io/specification/draft/basic/security_best_practices).
+
+
 ## Prerequisites
 
 Before starting, ensure you have:
