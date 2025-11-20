@@ -296,6 +296,28 @@ Add the following configuration:
 2. **API keys:** Replace `YOUR_BRAVE_API_KEY_HERE` and `YOUR_GOOGLE_MAPS_API_KEY_HERE` with your actual keys
 3. **For other MCP clients:** Check their documentation for configuration file locations
 
+**CRITICAL UPDATES REQUIRED:**
+
+1. **Filesystem path:** 
+   - Create workspace directory:
+     ```
+     mkdir -p ~/mcp-workspace
+     ```
+   - Replace `/home/YOUR_USERNAME/` with your actual username
+   - Use **absolute paths only** (no `~` or relative paths)
+
+2. **API Keys:**
+   - Set as environment variables (see Environment Variables section)
+   - Never commit config files with real API keys to Git
+   - Use `.gitignore` to exclude your config:
+     ```
+     echo "claude_desktop_config.json" >> .gitignore
+     ```
+
+3. **Git Repository Path:**
+   - Must point to an existing Git repository
+   - Use absolute path: `/home/username/my-repo`
+
 ---
 
 ## Step 4: Setting Up Environment Variables Securely
@@ -395,6 +417,31 @@ The AI assistant should request permission before executing operations and show 
 
 ---
 
+## Monitoring Resource Usage
+
+Keep an eye on your MCP servers:
+
+Real-time container stats
+```
+docker stats
+```
+Check disk usage
+```
+docker system df
+```
+View container logs
+```
+docker logs <container-name>
+```
+
+Set appropriate resource limits based on your system:
+
+| System RAM | Recommended Memory Limit | Recommended CPU Limit |
+|------------|-------------------------|----------------------|
+| 4GB | 256MB per server | 0.25 CPU |
+| 8GB | 512MB per server | 0.5 CPU |
+| 16GB+ | 1GB per server | 1.0 CPU |
+---
 ## Handy Docker Commands
 List all built images:
 ```
