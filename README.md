@@ -298,7 +298,17 @@ Add the following configuration:
 
 ---
 
-## Step 4: Test Your Setup
+## Step 4: Setting Up Environment Variables Securely
+
+Instead of hardcoding API keys in the config file, store them as environment variables:
+
+### Linux (Bash/Zsh)
+
+Add to `~/.bashrc` or `~/.zshrc`:
+
+
+
+## Step 5: Test Your Setup
 
 ### Restart Your MCP Client
 
